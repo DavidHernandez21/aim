@@ -1,0 +1,11 @@
+FROM python:3.12-slim
+
+ARG AIM_VERSION
+
+WORKDIR /opt/aim
+
+COPY ./multilinux_dist/aim-3.29.1-cp312-cp312-manylinux_2_34_x86_64.whl /opt/aim/aim-3.29.1-cp312-cp312-manylinux_2_34_x86_64.whl
+COPY ./dist/aimrocks-0.5.3-cp312-cp312-linux_x86_64.whl /opt/aim/aimrocks-0.5.3-cp312-cp312-linux_x86_64.whl
+
+RUN pip install --no-cache-dir /opt/aim/aimrocks-0.5.3-cp312-cp312-linux_x86_64.whl /opt/aim/aim-3.29.1-cp312-cp312-manylinux_2_34_x86_64.whl && \
+    rm -rf /opt/aim/*.whl

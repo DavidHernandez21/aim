@@ -1,7 +1,8 @@
 import logging
 import os
+import subprocess
 
-import regex as re
+import re
 
 from aim.fastai import AimCallback
 from fastai.vision.all import (
@@ -22,57 +23,58 @@ from fastai.vision.all import (
 
 
 def get_arabic_mnist_labels(file_path):
-    regex = 'label_(.+).png'
+    regex = "label_(.+).png"
     label = re.search(regex, str(file_path)).group(1)
     return arabic_mnist_labels[int(label) - 1]
 
 
 def download_arabic_mnist():
-    url = 'https://github.com/AnelMusic/Arabic_MNIST_Character_Classification/blob/master/arabic_mnist_dataset.tar.gz?raw=true'
-    output_zip_file = 'arabic_mnist_dataset.tar.gz'
-    output_dir = 'arabic_mnist_dataset'
+    url = "https://github.com/AnelMusic/Arabic_MNIST_Character_Classification/blob/master/arabic_mnist_dataset.tar.gz?raw=true"
+    output_zip_file = "arabic_mnist_dataset.tar.gz"
+    output_dir = "arabic_mnist_dataset"
 
     try:
-        os.system(f'wget -c {url} -O {output_zip_file}')
+        subprocess.run(["wget", "-c", url, "-O", output_zip_file], check=True)
     except Exception as e:
-        logging.info(f'Failed to download the dataset: {e}')
+        logging.info(f"Failed to download the dataset: {e}")
     try:
-        os.system(f'mkdir -p {output_dir} && tar -xzf {output_zip_file} -C {output_dir}')
+        os.makedirs(output_dir, exist_ok=True)
+        subprocess.run(["tar", "-xzf", output_zip_file, "-C", output_dir], check=True)
     except Exception as e:
-        logging.info(f'failed to unzip the dataset file: {e}')
+        logging.info(f"failed to unzip the dataset file: {e}")
 
     return output_dir
 
 
 arabic_mnist_labels = [
-    'alef',
-    'beh',
-    'teh',
-    'theh',
-    'jeem',
-    'hah',
-    'khah',
-    'dal',
-    'thal',
-    'reh',
-    'zain',
-    'seen',
-    'sheen',
-    'sad',
-    'dad',
-    'tah',
-    'zah',
-    'ain',
-    'ghain',
-    'feh',
-    'qaf',
-    'kaf',
-    'lam',
-    'meem',
-    'noon',
-    'heh',
-    'waw',
-    'yeh',
+    "alef",
+    "beh",
+    "teh",
+    "theh",
+    "jeem",
+    "hah",
+    "khah",
+    "dal",
+    "thal",
+    "reh",
+    "zain",
+    "seen",
+    "sheen",
+    "sad",
+    "dad",
+    "tah",
+    "zah",
+    "ain",
+    "ghain",
+    "feh",
+    "qaf",
+    "kaf",
+    "lam",
+    "meem",
+    "noon",
+    "heh",
+    "waw",
+    "yeh",
 ]
 
 arab_mnist = DataBlock(
@@ -99,8 +101,8 @@ learn = cnn_learner(
     pretrained=True,
     loss_func=CrossEntropyLossFlat(),
     metrics=accuracy,
-    model_dir='/tmp/model/',
-    cbs=AimCallback(experiment_name='example_experiment'),
+    model_dir="/tmp/model/",
+    cbs=AimCallback(experiment_name="example_experiment"),
 )
 
 learn.fit_one_cycle(1, lr_max=slice(10e-6, 1e-4))
